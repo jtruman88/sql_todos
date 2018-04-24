@@ -2,8 +2,12 @@ require 'pg'
 
 class DatabasePersistence
   def initialize(logger)
-    @db = PG.connect(dbname: 'todos')
+    @db = connect_to_database
     @logger = logger
+  end
+  
+  def disconnect
+    @db.close
   end
   
   def query(statement, *params)
@@ -73,6 +77,14 @@ class DatabasePersistence
   private
   
   attr_reader :db, :logger
+  
+  def connect_to_database
+    if Sinatra::Base.production?
+      PG.connect(ENV['DATABASE_URL'])
+    else
+      PG.connect(dbname: "todos")
+    end
+  end
   
   def find_todos_for_list(list_id)
     todo_sql = "SELECT * FROM todos WHERE list_id = $1;"

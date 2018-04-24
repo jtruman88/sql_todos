@@ -19,6 +19,10 @@ before do
   @storage = DatabasePersistence.new(logger)
 end
 
+after do
+  @storage.disconnect
+end
+
 helpers do
   def completed?(list)
     list[:todos].count >= 1 && list[:todos].all? { |todo| todo[:completed] }
