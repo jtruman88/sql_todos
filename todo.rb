@@ -25,14 +25,7 @@ end
 
 helpers do
   def completed?(list)
-    list[:todos].count >= 1 && list[:todos].all? { |todo| todo[:completed] }
-  end
-  
-  def completed_ratio(list)
-    completed = list[:todos].select { |todo| !todo[:completed] }.count
-    total = list[:todos].count
-    
-    "#{completed} / #{total}"
+    list[:todos_count] >= 1 && list[:todos_remaining_count] == 0
   end
   
   def list_class(list)
@@ -150,7 +143,7 @@ end
 get '/lists/:number' do
   @num = params[:number].to_i
   @list = load_list(@num)
-  @todos = @list[:todos]
+  @todos = @storage.find_todos_for_list(@num)
   
   erb :list, layout: :layout
 end
